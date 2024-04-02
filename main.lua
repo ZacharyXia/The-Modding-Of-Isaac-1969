@@ -15,7 +15,9 @@ local game = Game()
 local pool = game:GetItemPool()
 local game_started = false -- a hacky check for if the game is continued.
 local is_continued = false -- a hacky check for if the game is continued.
-
+local isBirthRightPickedUp = false
+local isBirthRightCleared = false
+local catItemCount = 0
 -- Utility Functions
 
 ---converts tearRate to the FireDelay formula, then modifies the FireDelay by the request amount, returns Modified FireDelay
@@ -279,6 +281,9 @@ mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function(_, Is_Continued)
         postPlayerInitLate()
     end
     game_started = true
+    isBirthRightPickedUp = false
+    isBirthRightCleared = false    
+    catItemCount = 0
 end)
 
 mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, function()
@@ -295,6 +300,50 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function(_, player)
 end)
 
 -- put your custom code here!
+
+--birthright support for 1969
+local function catCount()
+    local count = 0
+    local player = Isaac.GetPlayer()
+    local catArray = {145, 133, 81, 212, 187, 134, 665}
+    for i = 1, #catArray do
+        if (player:HasCollectible(catArray[i])) then
+            count = count + 1
+        end
+    end
+    return count
+end 
+
+local function birthright()
+    local player = Isaac.GetPlayer()
+    if (player:GetName() == '1969') then
+        catItemCount = catCount()
+        local catArray = {145, 133, 81, 212, 187, 134, 665}
+        for i = 1, #catArray do
+            if (not player:HasCollectible(catArray[i])) then
+                Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, catArray[i], Vector(300 + i * 40,280), Vector(0,0), nil)
+            end
+        end
+        isBirthRightPickedUp = true
+    end
+end
+
+local function birthrightClear()
+    local player = Isaac.GetPlayer()
+    if (player:GetName() == '1969') then
+        local newCount = catCount()
+        if (newCount == catItemCount + 1) then
+            for i, entity in ipairs(Isaac.GetRoomEntities()) do
+            if (entity.Type == 5 and entity.Variant == 100 and 
+                (entity.SubType == 145 or entity.SubType == 133 or entity.SubType == 81 or entity.SubType == 212 or 
+                entity.SubType == 187 or entity.SubType == 134 or entity.SubType == 665)) then
+                    entity:Remove()
+                end
+            end
+            isBirthRightCleared = true
+        end
+    end
+end
 
 local function ConvertRedHearts(player)
 	local skipConversion = false
@@ -329,7 +378,15 @@ function mod:PostRender()
     local player = Isaac.GetPlayer()
     if (player:GetName() == '1969') then
         ConvertRedHearts( player )
+        if (player:HasCollectible(619) and not isBirthRightPickedUp) then
+            birthright()
+        end
+
+        if (player:HasCollectible(619) and isBirthRightPickedUp and not isBirthRightCleared) then
+            birthrightClear()
+        end
     end
+
 end
 
 mod:AddCallback( ModCallbacks.MC_POST_RENDER, mod.PostRender)
