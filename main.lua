@@ -137,6 +137,77 @@ local function addCostumes(AppliedCostume, player) -- costume logic
     end
 end
 
+local function getRandomItem(seed)
+    local RECOMMENDED_SHIFT_IDX = 35
+    local game = Game()
+    local seeds = game:GetSeeds()
+    local startSeed = seeds:GetStartSeed()
+    local rng = RNG()
+    rng:SetSeed(startSeed, RECOMMENDED_SHIFT_IDX + seed)
+    local randomItem = -1
+    local curSeed = -10;
+    while (randomItem == -1 or randomItem == 550 or randomItem == 552 or 
+    randomItem == 551 or randomItem == 668 or randomItem == 714 or 
+    randomItem == 715 or randomItem == 626 or randomItem == 627) do
+        randomItem = rng:RandomInt(719)
+        rng:SetSeed(startSeed, RECOMMENDED_SHIFT_IDX + seed + curSeed)
+        curSeed = curSeed - 1
+    end
+    return randomItem
+end
+
+--Add two random items at the start of the game
+--1969 can get at most 1 active item, and more likely to get low quality items
+local function addRandomItems()
+    local player = Isaac.GetPlayer()
+    if (player:GetName() == '1969') then
+        local item1 = -1 
+        local item2 = -1
+        local seed = 1
+
+        local isItem1Added = false
+
+        while (not isItem1Added) do
+            item1 = getRandomItem(seed)
+            seed = seed + 1 
+            local item1Config = Isaac.GetItemConfig():GetCollectible(item1)
+            if (not item1Config) then
+                goto continue
+            end
+            
+            if (item1Config.Quality >= 3) then
+                item1 = getRandomItem(seed)
+                seed = seed + 1
+            end
+            player:AddCollectible(item1, 0, true, 0, 0)
+            isItem1Added = true
+            ::continue::
+        end
+
+        local isItem2Added = false
+        while (item2 == -1 or not isItem2Added) do 
+            item2 = getRandomItem(seed)
+            seed = seed + 1
+            local item2Config = Isaac.GetItemConfig():GetCollectible(item2)
+            if (not item2Config) then
+                goto continue
+            end
+            if (item2Config.Quality >= 3) then
+                goto continue
+            elseif (item2Config.Type ~= 1) then
+                goto continue
+            elseif (item2 == item1) then
+                goto continue
+            else
+                isItem2Added = true
+                player:AddCollectible(item2, 0, true, 0, 0)
+            end
+            ::continue::
+        end
+    end
+end
+
+
 ---@param player EntityPlayer
 local function CriticalHitCacheCallback(player)
     if not (characters:isACharacterDescription(player)) then return end
@@ -197,6 +268,7 @@ local function postPlayerInitLate(player)
         player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
         player:EvaluateItems()
     end
+    addRandomItems();
 end
 
 ---@param _ any
