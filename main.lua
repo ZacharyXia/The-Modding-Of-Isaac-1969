@@ -182,6 +182,7 @@ local function addRandomItems()
                 seed = seed + 1
             end
             player:AddCollectible(item1, 0, true, 0, 0)
+            player:RemoveCostume(item1Config)
             isItem1Added = true
             ::continue::
         end
@@ -203,6 +204,7 @@ local function addRandomItems()
             else
                 isItem2Added = true
                 player:AddCollectible(item2, 0, true, 0, 0)
+                player:RemoveCostume(item2Config)
             end
             ::continue::
         end
@@ -332,7 +334,7 @@ local function birthrightClear()
     local player = Isaac.GetPlayer()
     if (player:GetName() == '1969') then
         local newCount = catCount()
-        if (newCount == catItemCount + 1) then
+        if (newCount >= catItemCount + 1) then
             for i, entity in ipairs(Isaac.GetRoomEntities()) do
             if (entity.Type == 5 and entity.Variant == 100 and 
                 (entity.SubType == 145 or entity.SubType == 133 or entity.SubType == 81 or entity.SubType == 212 or 
