@@ -16,7 +16,10 @@ local pool = game:GetItemPool()
 local game_started = false -- a hacky check for if the game is continued.
 local is_continued = false -- a hacky check for if the game is continued.
 local isBirthRightPickedUp = false
--- local isBirthRightCleared = false
+local isBirthRightCleared = false
+local item1FromStart = -1
+local item2FromStart = -1
+local is1969 = false
 local isDeadCatCleared = false
 local itemTrack = {}
 -- local catItemCount = 0
@@ -81,6 +84,8 @@ mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function(_, player, cache)
     if not (characters:isACharacterDescription(player)) then return end
 
     local playerStat = characters:getCharacterDescription(player).stats
+
+    if not (playerStat) then return end
 
     if (playerStat.Damage and cache & CacheFlag.CACHE_DAMAGE == CacheFlag.CACHE_DAMAGE) then
         player.Damage = player.Damage + playerStat.Damage
@@ -160,7 +165,7 @@ end
 --1969 can get at most 1 active item, and more likely to get low quality items
 local function addRandomItems()
     local player = Isaac.GetPlayer()
-    if (player:GetName() == '1969') then
+    if (player:GetName() == '1969_b' or player:GetName() == '1969') then
         local item1 = -1 
         local item2 = -1
         local seed = 1
@@ -180,8 +185,8 @@ local function addRandomItems()
                 seed = seed + 1
             end
             player:AddCollectible(item1, 0, true, 0, 0)
-            player:RemoveCostume(item1Config)
             isItem1Added = true
+            item1FromStart = item1
             if (not contains(itemTrack, item1)) then
                 table.insert(itemTrack, item1)
             end
@@ -204,15 +209,16 @@ local function addRandomItems()
                 goto continue
             else
                 isItem2Added = true
+                item2FromStart = item2
                 if (not contains(itemTrack, item2)) then
                     table.insert(itemTrack, item2)
                 end
                 player:AddCollectible(item2, 0, true, 0, 0)
-                player:RemoveCostume(item2Config)
             end
             ::continue::
         end
     end
+ 
 end
 
 
@@ -232,17 +238,28 @@ local function CriticalHitCacheCallback(player)
     end
 end
 
-function mod:doubleEnemies()
-    player = player or Isaac.GetPlayer()
-    if (player:GetName() == '1969' and player:HasCollectible(619)) then
-        for i, entity in ipairs(Isaac.GetRoomEntities()) do
-            if (entity:IsActiveEnemy()) then
-                Isaac.Spawn(entity.Type, entity.Variant,entity.SubType, entity.Position, entity.Velocity, entity.SpawnerEntity)
+function mod:newRoomCallBack()
+    player = Isaac.GetPlayer()
+    if (not (player:GetName() == '1969_b' or player:GetName() == '1969') and is1969 == true) then
+        is1969 = false
+        local hair = Isaac.GetCostumeIdByPath("gfx/characters/" .. "character_1969_hair" .. ".anm2")
+        player:TryRemoveNullCostume(hair)
+    end
+    if (player:GetName() == '1969_b' or player:GetName() == '1969') then
+        if (item1FromStart ~= -1 and item2FromStart ~= -1) then
+            Game():GetItemPool():RemoveCollectible(item1FromStart)
+            Game():GetItemPool():RemoveCollectible(item2FromStart)
+        end
+
+        if (player:HasCollectible(619)) then
+            for i, entity in ipairs(Isaac.GetRoomEntities()) do
+                if (entity:IsActiveEnemy() and not entity:IsBoss() and entity:IsVulnerableEnemy()) then
+                    Isaac.Spawn(entity.Type, entity.Variant,entity.SubType, entity.Position, entity.Velocity, entity.SpawnerEntity)
+                end
             end
         end
     end
 
-    
 end
 
 ---@param player? EntityPlayer
@@ -291,6 +308,13 @@ local function postPlayerInitLate(player)
     end
     itemTrack = {}
     addRandomItems();
+
+    if (player:GetName() == '1969_b' or player:GetName() == '1969') then
+        local hair = Isaac.GetCostumeIdByPath("gfx/characters/" .. "character_1969_hair" .. ".anm2")
+        player:AddNullCostume(hair)
+        is1969 = true
+    end
+    
 end
 
 ---@param _ any
@@ -302,6 +326,7 @@ mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function(_, Is_Continued)
     end
     game_started = true
     isBirthRightPickedUp = false
+    isBirthRightCleared = false
     isDeadCatCleared = false
 end)
 
@@ -320,22 +345,9 @@ end)
 
 -- put your custom code here!
 
---birthright support for 1969
--- local function catCount()
---     local count = 0
---     local player = Isaac.GetPlayer()
---     local catArray = {145, 133, 81, 212, 187, 134, 665}
---     for i = 1, #catArray do
---         if (player:HasCollectible(catArray[i])) then
---             count = count + 1
---         end
---     end
---     return count
--- end 
-
 local function birthright()
     local player = Isaac.GetPlayer()
-    if (player:GetName() == '1969') then
+    if (player:GetName() == '1969_b' or player:GetName() == '1969') then
         for i = 1, #itemTrack do
             player:AddCollectible(itemTrack[i], 0, true, 0, 0)
         end
@@ -345,7 +357,7 @@ end
 
 -- local function birthrightClear()
 --     local player = Isaac.GetPlayer()
---     if (player:GetName() == '1969') then
+--     if (player:GetName() == '1969_b') then
 --         local newCount = catCount()
 --         if (newCount >= catItemCount + 1) then
 --             for i, entity in ipairs(Isaac.GetRoomEntities()) do
@@ -362,7 +374,7 @@ end
 
 local function deadCatClear()
     local player = Isaac.GetPlayer()
-    if (player:GetName() == '1969') then
+    if (player:GetName() == '1969_b') then
         local curHeart = player:GetSoulHearts()
         player:AddBlackHearts(-curHeart)
         player:AddBlackHearts(2)
@@ -402,22 +414,33 @@ end
 
 function mod:PostRender()
     local player = Isaac.GetPlayer()
-    if (player:GetName() == '1969') then
+    if (player:GetName() == '1969_b') then
         ConvertRedHearts( player )
         if (player:HasCollectible(619) and not isBirthRightPickedUp) then
             birthright()
         end
-
-        -- if (player:HasCollectible(619) and isBirthRightPickedUp and not isBirthRightCleared) then
-        --     birthrightClear()
-        -- end
 
         if (player:HasCollectible(81) and not isDeadCatCleared) then
             deadCatClear()
         end
         local queueItemData = player.QueuedItem
         if (queueItemData.Item) then
-            if (not contains(itemTrack, queueItemData.Item.ID)) then
+            if (not contains(itemTrack, queueItemData.Item.ID) and (Isaac.GetItemConfig():GetCollectible(queueItemData.Item.ID).Type ~= 3)) then
+                table.insert(itemTrack, queueItemData.Item.ID)
+            end
+        end
+    end
+    if (player:GetName() == '1969') then
+        if (player:HasCollectible(619) and not isBirthRightPickedUp) then
+            birthright()
+        end
+
+        if (player:HasCollectible(81) and not isDeadCatCleared) then
+            deadCatClear()
+        end
+        local queueItemData = player.QueuedItem
+        if (queueItemData.Item) then
+            if (not contains(itemTrack, queueItemData.Item.ID) and (Isaac.GetItemConfig():GetCollectible(queueItemData.Item.ID).Type ~= 3)) then
                 table.insert(itemTrack, queueItemData.Item.ID)
             end
         end
@@ -426,5 +449,5 @@ function mod:PostRender()
 end
 
 mod:AddCallback( ModCallbacks.MC_POST_RENDER, mod.PostRender)
-mod:AddCallback( ModCallbacks.MC_POST_NEW_ROOM, mod.doubleEnemies)
+mod:AddCallback( ModCallbacks.MC_POST_NEW_ROOM, mod.newRoomCallBack)
 ::EndOfFile::

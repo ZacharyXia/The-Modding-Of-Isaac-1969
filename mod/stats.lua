@@ -2,6 +2,7 @@ local CharacterBuilder = include("lib.CharacterTemplateLib")
 
 -- first we make a new character
 local character_1969 = CharacterBuilder.newCharacterSet("1969")
+local character_1969_b = CharacterBuilder.newCharacterSet("1969_b")
 --[[
 	When calling newCharacter you can pass in the characters name to set that
 	you can also pass in false if this character does not have a tainted variant
@@ -19,6 +20,7 @@ local character_1969 = CharacterBuilder.newCharacterSet("1969")
 -- Note: anything you don't want you don't need to put, just remove it
 
 character_1969:addCostume("character_1969_hair")
+character_1969_b:addCostume("character_1969_hair")
 --[[
 	To add a costume you do
 	Character:AddCostume(ID)
@@ -107,7 +109,6 @@ normalStats.criticalMultiplier = 2
 
 	if you do not set these stats and they are running your character will simply start with no critchance and 2x crit multiplier
 ]]
-character_1969:setHeartType(1)
 character_1969:setStats(normalStats)
 
 --[[
@@ -151,18 +152,18 @@ character_1969:setStats(normalStats)
 -- -- even if this is a card you would need the third option
 -- -- so it would look like "Alpha:SetPocketItem(CardType, false, true)" meaning, its a card so set the second one to false, and third tells the template its the tainted variant
 
--- local taintedStats = CharacterBuilder.newStatTable() -- create a new stat table
--- taintedStats.Damage = 5.50
--- taintedStats.Firedelay = 3.73
--- taintedStats.Shotspeed = 2.00
--- taintedStats.Range = 7.50
--- taintedStats.Speed = 2.00
--- taintedStats.Tearflags = TearFlags.TEAR_POISON | TearFlags.TEAR_FREEZE
--- taintedStats.Tearcolor = Color(1.0, 1.0, 1.0, 1.0, 0, 0, 0) -- Color, first four arguments between 0 and 1
--- taintedStats.Flying = false
--- taintedStats.Luck = 1.00
+local taintedStats = CharacterBuilder.newStatTable() -- create a new stat table
+taintedStats.Damage = 3.50
+taintedStats.Firedelay = 2.73
+taintedStats.Shotspeed = 1.00
+taintedStats.Range = 6.90
+taintedStats.Speed = 1.00
+taintedStats.Tearflags = none
+taintedStats.Tearcolor = Color(1.0, 1.0, 1.0, 1.0, 0, 0, 0) -- Color, first four arguments between 0 and 1
+taintedStats.Flying = false
+taintedStats.Luck = 0.19
 
--- alpha:setStats(taintedStats, true) -- true again at the end, getting the idea now?
+character_1969_b:setStats(taintedStats) -- true again at the end, getting the idea now?
 
 --[[
 	--MORE INFO:--

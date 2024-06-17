@@ -1,8 +1,8 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="8/28/2022 10:44:29 PM" Version="13" Fps="30"/>
+	<Info CreatedBy="Unknown" CreatedOn="3/04/2024 6:22:37 PM" Version="21" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="CharacterMenuAlt.png" Id="0"/>
+			<Spritesheet Path="CharacterMenu.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="Portrait" Id="0" SpritesheetId="0"/>
@@ -10,14 +10,14 @@
 		<Nulls/>
 		<Events/>
 	</Content>
-	<Animations DefaultAnimation="Alpha">
-		<Animation Name="Alpha" FrameNum="2" Loop="false">
+	<Animations DefaultAnimation="1969_b">
+		<Animation Name="1969_b" FrameNum="1" Loop="false">
 			<RootAnimation>
 				<Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
 			</RootAnimation>
 			<LayerAnimations>
 				<LayerAnimation LayerId="0" Visible="true">
-					<Frame XPosition="0" YPosition="0" XPivot="24" YPivot="24" XCrop="10" YCrop="924" Width="45" Height="65" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
+					<Frame XPosition="0" YPosition="0" XPivot="17" YPivot="26" XCrop="12" YCrop="336" Width="40" Height="52" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
 				</LayerAnimation>
 			</LayerAnimations>
 			<NullAnimations/>

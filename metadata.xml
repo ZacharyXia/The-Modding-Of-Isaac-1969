@@ -1,8 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-	<name>1969_renew</name>
-	<directory>1969_renew</directory>
-	<description/>
-	<version>1.0</version>
-	<visibility/>
+    <name>1969_renew</name>
+    <directory>1969_renew</directory>
+    <id>3211045799</id>
+    <description>WIP</description>
+    <version>1.2</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Player Characters"/>
 </metadata>
-

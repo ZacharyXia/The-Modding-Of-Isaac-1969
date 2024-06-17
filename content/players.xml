@@ -1,6 +1,6 @@
 <players nameimageroot="gfx/ui/boss/" portraitroot="gfx/ui/stage/" root="gfx/characters/costumes/">
-  <player hp="0" armor="2" bombs="1" name="1969" nameimage="playername_1969.png" portrait="playerportrait_1969.png" skin="character_1969.png" skinColor="-1"/>
-  <player hp="0" bombs="1" name="1969" nameimage="playername_1969_b.png" portrait="playerportrait_1969_b.png" skin="character_1969_b.png" skinColor="-1" bSkinParent="Alpha"/>
+  <player hp="6" armor="0" bombs="1" name="1969" nameimage="playername_1969.png" portrait="playerportrait_1969.png" skin="character_1969.png" skinColor="-1"/>
+  <player hp="0" armor="2" bombs="1" name="1969_b" nameimage="playername_1969_b.png" portrait="playerportrait_1969_b.png" skin="character_1969_b.png" skinColor="-1" bSkinParent="1969"/>
 </players>
 <!--
 	IMPORTANT:
